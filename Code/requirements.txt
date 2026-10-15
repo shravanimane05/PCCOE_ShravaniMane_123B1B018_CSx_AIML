@@ -1,0 +1,22 @@
+# AutoTARA AI Dependencies (Pinned versions for reproducibility)
+
+# Core Runtime & CLI
+pyyaml==6.0.2
+requests==2.32.3
+networkx==3.4.2
+
+# Testing & Quality
+pytest==8.3.4
+
+# Retrieval & NLP
+scikit-learn==1.6.1
+rank-bm25==0.2.2
+sentence-transformers==3.4.1
+chromadb==0.6.3
+
+# UI & Visualization
+streamlit==1.42.0
+
+# Evaluation & Metrics
+pandas==2.2.3
+numpy==2.2.2

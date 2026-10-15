@@ -1,0 +1,339 @@
+{
+  "version": "1.0",
+  "name": "Connected Vehicle Telematics Baseline v1",
+  "description": "Fictional connected-vehicle architecture with mobile app, cloud backend, OTA server, telematics control unit, central gateway, in-vehicle ECUs, and diagnostic interface.",
+  "components": [
+    {
+      "id": "COMP-01",
+      "name": "Mobile App",
+      "type": "application",
+      "trust_zone_id": "TZ-01",
+      "description": "Smartphone companion app for remote vehicle control, status monitoring, trip history, and OTA update notifications."
+    },
+    {
+      "id": "COMP-02",
+      "name": "Cloud Backend",
+      "type": "server",
+      "trust_zone_id": "TZ-02",
+      "description": "Cloud-hosted backend providing authentication, vehicle command relay, telemetry storage, user account management, and fleet analytics."
+    },
+    {
+      "id": "COMP-03",
+      "name": "OTA Server",
+      "type": "server",
+      "trust_zone_id": "TZ-02",
+      "description": "Dedicated server for firmware packaging, signing, distribution, and campaign management for over-the-air updates."
+    },
+    {
+      "id": "COMP-04",
+      "name": "Telematics Control Unit (TCU)",
+      "type": "ecu",
+      "trust_zone_id": "TZ-03",
+      "description": "Vehicle-side connectivity module providing cellular communication to the cloud, receiving remote commands, uploading telemetry, and managing OTA downloads."
+    },
+    {
+      "id": "COMP-05",
+      "name": "Central Gateway ECU",
+      "type": "ecu",
+      "trust_zone_id": "TZ-04",
+      "description": "Central routing and firewall ECU that interconnects all in-vehicle network domains (CAN, Ethernet) and enforces message-filtering policies between domains."
+    },
+    {
+      "id": "COMP-06",
+      "name": "Infotainment ECU",
+      "type": "ecu",
+      "trust_zone_id": "TZ-04",
+      "description": "In-vehicle infotainment system providing navigation, media, and connectivity features. Connected to the in-vehicle network for vehicle data display."
+    },
+    {
+      "id": "COMP-07",
+      "name": "Body Control Module (BCM) ECU",
+      "type": "ecu",
+      "trust_zone_id": "TZ-04",
+      "description": "ECU controlling body functions: door locks, windows, lights, horn, and other comfort/convenience features."
+    },
+    {
+      "id": "COMP-08",
+      "name": "Powertrain ECU",
+      "type": "ecu",
+      "trust_zone_id": "TZ-04",
+      "description": "Safety-critical ECU controlling engine management, transmission, and drivetrain functions."
+    },
+    {
+      "id": "COMP-09",
+      "name": "Diagnostic Tester / OBD-II",
+      "type": "tool",
+      "trust_zone_id": "TZ-05",
+      "description": "External diagnostic tool connecting to the vehicle via the OBD-II port for fault reading, ECU programming, and calibration."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "IF-01",
+      "name": "Mobile-to-Cloud API",
+      "source_component_id": "COMP-01",
+      "target_component_id": "COMP-02",
+      "protocol": "HTTPS/REST",
+      "trust_boundary_id": "TB-01",
+      "description": "RESTful API over HTTPS for user authentication, vehicle command submission, status queries, and trip history retrieval."
+    },
+    {
+      "id": "IF-02",
+      "name": "Cloud-to-TCU Command Channel",
+      "source_component_id": "COMP-02",
+      "target_component_id": "COMP-04",
+      "protocol": "MQTT/TLS",
+      "trust_boundary_id": "TB-02",
+      "description": "Encrypted MQTT channel for relaying remote commands (lock, unlock, engine start) from cloud to TCU."
+    },
+    {
+      "id": "IF-03",
+      "name": "OTA Server-to-TCU Update Channel",
+      "source_component_id": "COMP-03",
+      "target_component_id": "COMP-04",
+      "protocol": "HTTPS",
+      "trust_boundary_id": "TB-02",
+      "description": "Secure channel for firmware package download from OTA server to TCU."
+    },
+    {
+      "id": "IF-04",
+      "name": "TCU-to-Cloud Telemetry Upload",
+      "source_component_id": "COMP-04",
+      "target_component_id": "COMP-02",
+      "protocol": "MQTT/TLS",
+      "trust_boundary_id": "TB-02",
+      "description": "Encrypted telemetry upload channel for vehicle location, speed, fuel level, and diagnostic data."
+    },
+    {
+      "id": "IF-05",
+      "name": "TCU-to-Gateway Internal Link",
+      "source_component_id": "COMP-04",
+      "target_component_id": "COMP-05",
+      "protocol": "Automotive Ethernet",
+      "trust_boundary_id": "TB-03",
+      "description": "Internal Ethernet link between TCU and central gateway for forwarding remote commands to in-vehicle ECUs and receiving vehicle status."
+    },
+    {
+      "id": "IF-06",
+      "name": "Gateway-to-Infotainment CAN",
+      "source_component_id": "COMP-05",
+      "target_component_id": "COMP-06",
+      "protocol": "CAN",
+      "trust_boundary_id": null,
+      "description": "CAN bus connection from gateway to infotainment ECU within the in-vehicle network domain."
+    },
+    {
+      "id": "IF-07",
+      "name": "Gateway-to-BCM CAN",
+      "source_component_id": "COMP-05",
+      "target_component_id": "COMP-07",
+      "protocol": "CAN",
+      "trust_boundary_id": null,
+      "description": "CAN bus connection from gateway to body control module for lock/unlock, window, and lighting commands."
+    },
+    {
+      "id": "IF-08",
+      "name": "Gateway-to-Powertrain CAN",
+      "source_component_id": "COMP-05",
+      "target_component_id": "COMP-08",
+      "protocol": "CAN",
+      "trust_boundary_id": null,
+      "description": "CAN bus connection from gateway to powertrain ECU for engine start/stop and drivetrain commands."
+    },
+    {
+      "id": "IF-09",
+      "name": "Diagnostic Tester-to-Gateway OBD-II",
+      "source_component_id": "COMP-09",
+      "target_component_id": "COMP-05",
+      "protocol": "OBD-II / ISO 14229 (UDS)",
+      "trust_boundary_id": "TB-04",
+      "description": "Physical OBD-II port connection for diagnostic tool access to vehicle ECUs via the gateway."
+    },
+    {
+      "id": "IF-10",
+      "name": "Cloud Backend Admin Interface",
+      "source_component_id": null,
+      "target_component_id": "COMP-02",
+      "protocol": "HTTPS",
+      "trust_boundary_id": "TB-01",
+      "description": "Administrative web interface for cloud backend management, user administration, and OTA campaign configuration."
+    }
+  ],
+  "data_flows": [
+    {
+      "id": "DF-01",
+      "name": "User Authentication Request/Response",
+      "interface_id": "IF-01",
+      "data_type": "credentials",
+      "direction": "bidirectional",
+      "description": "OAuth 2.0 authentication flow between mobile app and cloud backend."
+    },
+    {
+      "id": "DF-02",
+      "name": "Remote Vehicle Command",
+      "interface_id": "IF-01",
+      "data_type": "command",
+      "direction": "mobile_to_cloud",
+      "description": "User-initiated vehicle commands (lock, unlock, engine start) sent from mobile app to cloud."
+    },
+    {
+      "id": "DF-03",
+      "name": "Cloud-to-TCU Command Relay",
+      "interface_id": "IF-02",
+      "data_type": "command",
+      "direction": "cloud_to_vehicle",
+      "description": "Authenticated vehicle commands forwarded from cloud backend to TCU via MQTT."
+    },
+    {
+      "id": "DF-04",
+      "name": "OTA Firmware Package Download",
+      "interface_id": "IF-03",
+      "data_type": "firmware",
+      "direction": "cloud_to_vehicle",
+      "description": "Signed firmware packages downloaded from OTA server to TCU."
+    },
+    {
+      "id": "DF-05",
+      "name": "Vehicle Telemetry Upload",
+      "interface_id": "IF-04",
+      "data_type": "telemetry",
+      "direction": "vehicle_to_cloud",
+      "description": "Periodic upload of vehicle location, speed, fuel, and diagnostic data from TCU to cloud."
+    },
+    {
+      "id": "DF-06",
+      "name": "TCU-to-Gateway Command Forward",
+      "interface_id": "IF-05",
+      "data_type": "command",
+      "direction": "tcu_to_gateway",
+      "description": "Remote commands translated to in-vehicle protocol and forwarded from TCU to gateway."
+    },
+    {
+      "id": "DF-07",
+      "name": "Gateway-to-ECU CAN Commands",
+      "interface_id": "IF-07",
+      "data_type": "command",
+      "direction": "gateway_to_ecu",
+      "description": "CAN messages from gateway to BCM for executing body control commands."
+    },
+    {
+      "id": "DF-08",
+      "name": "Gateway-to-Powertrain Commands",
+      "interface_id": "IF-08",
+      "data_type": "command",
+      "direction": "gateway_to_ecu",
+      "description": "CAN messages from gateway to powertrain ECU for engine management commands."
+    },
+    {
+      "id": "DF-09",
+      "name": "Diagnostic Service Requests",
+      "interface_id": "IF-09",
+      "data_type": "diagnostic",
+      "direction": "bidirectional",
+      "description": "UDS diagnostic service requests and responses between diagnostic tester and ECUs via gateway."
+    },
+    {
+      "id": "DF-10",
+      "name": "Security Event Log Upload",
+      "interface_id": "IF-04",
+      "data_type": "logs",
+      "direction": "vehicle_to_cloud",
+      "description": "Security event logs forwarded from TCU to cloud backend for centralized monitoring."
+    }
+  ],
+  "trust_zones": [
+    {"id": "TZ-01", "name": "External User Zone",       "trust_level": "untrusted"},
+    {"id": "TZ-02", "name": "Cloud Zone",               "trust_level": "semi-trusted"},
+    {"id": "TZ-03", "name": "Vehicle Boundary Zone",    "trust_level": "trusted"},
+    {"id": "TZ-04", "name": "In-Vehicle Network Zone",  "trust_level": "highly-trusted"},
+    {"id": "TZ-05", "name": "Diagnostic Zone",          "trust_level": "untrusted"}
+  ],
+  "trust_boundaries": [
+    {"id": "TB-01", "name": "Mobile to Cloud",       "from_zone_id": "TZ-01", "to_zone_id": "TZ-02"},
+    {"id": "TB-02", "name": "Cloud to Vehicle",      "from_zone_id": "TZ-02", "to_zone_id": "TZ-03"},
+    {"id": "TB-03", "name": "TCU to In-Vehicle",     "from_zone_id": "TZ-03", "to_zone_id": "TZ-04"},
+    {"id": "TB-04", "name": "Diagnostic to Gateway", "from_zone_id": "TZ-05", "to_zone_id": "TZ-04"}
+  ],
+  "assets": [
+    {
+      "id": "A-01",
+      "name": "User Account and Mobile-App Access Token",
+      "category": "data",
+      "type": "mobile_app",
+      "hosted_on": ["COMP-01", "COMP-02"],
+      "description": "User credentials, OAuth access/refresh tokens, and session state for mobile-app authentication."
+    },
+    {
+      "id": "A-02",
+      "name": "Cloud Backend API",
+      "category": "component",
+      "type": "cloud_api",
+      "hosted_on": ["COMP-02"],
+      "description": "RESTful API endpoints for vehicle command, telemetry, user management, and OTA campaign services."
+    },
+    {
+      "id": "A-03",
+      "name": "OTA Firmware Package",
+      "category": "data",
+      "type": "ota_firmware",
+      "hosted_on": ["COMP-03", "COMP-04"],
+      "description": "Signed firmware images for ECU updates, including metadata, version info, and cryptographic signatures."
+    },
+    {
+      "id": "A-04",
+      "name": "Firmware Signing Key and Certificate",
+      "category": "data",
+      "type": "signing_key",
+      "hosted_on": ["COMP-03"],
+      "description": "Private key and X.509 certificate used to sign OTA firmware packages for authenticity verification."
+    },
+    {
+      "id": "A-05",
+      "name": "Telematics Control Unit (TCU)",
+      "category": "component",
+      "type": "tcu",
+      "hosted_on": ["COMP-04"],
+      "description": "Vehicle connectivity module handling cellular communication, remote commands, telemetry, and OTA downloads."
+    },
+    {
+      "id": "A-06",
+      "name": "Central Gateway ECU",
+      "category": "component",
+      "type": "gateway_ecu",
+      "hosted_on": ["COMP-05"],
+      "description": "Central routing and security gateway interconnecting all in-vehicle network domains with firewall policies."
+    },
+    {
+      "id": "A-07",
+      "name": "CAN/Ethernet Messages and Vehicle Commands",
+      "category": "data",
+      "type": "vehicle_messages",
+      "hosted_on": ["COMP-05", "COMP-06", "COMP-07", "COMP-08"],
+      "description": "In-vehicle bus messages carrying commands, status, and control signals between ECUs."
+    },
+    {
+      "id": "A-08",
+      "name": "Diagnostic Services and Session Access",
+      "category": "component",
+      "type": "diagnostic_services",
+      "hosted_on": ["COMP-05", "COMP-09"],
+      "description": "UDS diagnostic services (read DTC, security access, ECU programming) accessible via OBD-II port."
+    },
+    {
+      "id": "A-09",
+      "name": "Vehicle Telemetry and Location Data",
+      "category": "data",
+      "type": "telemetry_data",
+      "hosted_on": ["COMP-04", "COMP-02"],
+      "description": "GPS location, speed, fuel level, driving behavior, and diagnostic telemetry collected and uploaded to cloud."
+    },
+    {
+      "id": "A-10",
+      "name": "Security and Audit Logs",
+      "category": "data",
+      "type": "audit_logs",
+      "hosted_on": ["COMP-02", "COMP-04", "COMP-05"],
+      "description": "Tamper-evident logs of security events, authentication attempts, configuration changes, and anomaly detections."
+    }
+  ]
+}

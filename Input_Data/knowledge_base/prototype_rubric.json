@@ -1,0 +1,23 @@
+{
+  "impact_scale": [
+    {"level": 1, "label": "Negligible", "description": "No safety, privacy, or financial effect; purely cosmetic or informational"},
+    {"level": 2, "label": "Minor", "description": "Minor user inconvenience; no safety impact; negligible financial loss"},
+    {"level": 3, "label": "Moderate", "description": "Moderate financial or privacy impact; limited operational disruption; no direct safety hazard"},
+    {"level": 4, "label": "Major", "description": "Significant safety risk, large-scale data breach, or substantial financial loss; regulatory consequences likely"},
+    {"level": 5, "label": "Critical", "description": "Life-threatening safety impact, catastrophic data breach, or irreversible vehicle damage"}
+  ],
+  "attack_feasibility_scale": [
+    {"level": 1, "label": "Very Low", "description": "Requires nation-state resources, physical disassembly, and extended time (months)"},
+    {"level": 2, "label": "Low", "description": "Requires specialized equipment, expert knowledge, and significant preparation"},
+    {"level": 3, "label": "Moderate", "description": "Achievable with moderate skill and publicly documented techniques; requires some equipment"},
+    {"level": 4, "label": "High", "description": "Achievable with publicly available tools, basic security knowledge, and short preparation"},
+    {"level": 5, "label": "Very High", "description": "Trivially exploitable with no special tools or skills; attack can be automated"}
+  ],
+  "risk_bands": [
+    {"min": 1,  "max": 5,  "label": "Low",      "color": "#4caf50"},
+    {"min": 6,  "max": 12, "label": "Medium",    "color": "#ff9800"},
+    {"min": 13, "max": 19, "label": "High",      "color": "#f44336"},
+    {"min": 20, "max": 25, "label": "Critical",  "color": "#9c27b0"}
+  ],
+  "disclaimer": "This is a prototype scoring model for educational purposes. It is NOT an organization-approved ISO/SAE 21434 risk assessment methodology."
+}

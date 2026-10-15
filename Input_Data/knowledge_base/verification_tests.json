@@ -1,0 +1,258 @@
+[
+  {
+    "id": "TEST-001",
+    "title": "Verify Mutual TLS Handshake Enforcement",
+    "objective": "Confirm that the cloud API rejects connections without a valid client certificate.",
+    "steps": ["1. Attempt a TLS connection to the cloud API without presenting a client certificate.", "2. Attempt a TLS connection with an expired client certificate.", "3. Attempt a TLS connection with a valid client certificate."],
+    "expected_result": "Steps 1 and 2 are rejected with TLS handshake failure. Step 3 completes successfully and returns an authenticated session.",
+    "linked_requirement_ids": ["REQ-001"]
+  },
+  {
+    "id": "TEST-002",
+    "title": "Verify OAuth Token Expiry Enforcement",
+    "objective": "Confirm that expired access tokens are rejected and that refresh token rotation is enforced.",
+    "steps": ["1. Obtain a valid access token via OAuth 2.0 flow.", "2. Wait for the token to expire (15+ minutes).", "3. Attempt to use the expired token to call a protected API endpoint.", "4. Use the refresh token to obtain a new access token and verify the old refresh token is invalidated."],
+    "expected_result": "Expired token is rejected with 401 Unauthorized. Refresh token rotation produces a new access token and invalidates the previous refresh token.",
+    "linked_requirement_ids": ["REQ-001"]
+  },
+  {
+    "id": "TEST-003",
+    "title": "Verify Firmware Signature Validation",
+    "objective": "Confirm that the TCU rejects firmware images with invalid, missing, or tampered signatures.",
+    "steps": ["1. Prepare a firmware image with a valid signature.", "2. Prepare a firmware image with a corrupted signature (flip one bit).", "3. Prepare a firmware image with no signature.", "4. Attempt to install each image on the TCU."],
+    "expected_result": "Only the validly-signed image is accepted. Corrupted and unsigned images are rejected with a signature verification error.",
+    "linked_requirement_ids": ["REQ-002"]
+  },
+  {
+    "id": "TEST-004",
+    "title": "Verify Secure Boot Chain Integrity",
+    "objective": "Confirm that the ECU halts boot when any boot stage is modified.",
+    "steps": ["1. Boot the ECU with unmodified firmware.", "2. Modify one byte in the second-stage bootloader.", "3. Attempt to boot with the modified bootloader."],
+    "expected_result": "Unmodified firmware boots normally. Modified bootloader causes the secure boot chain to halt at the verification stage with an integrity violation error.",
+    "linked_requirement_ids": ["REQ-003"]
+  },
+  {
+    "id": "TEST-005",
+    "title": "Verify CAN Message MAC Authentication",
+    "objective": "Confirm that the gateway ECU rejects CAN frames with invalid or missing message authentication codes.",
+    "steps": ["1. Send a CAN frame with a valid CMAC to the gateway.", "2. Send the same CAN frame with a corrupted CMAC.", "3. Send the same CAN frame without any CMAC."],
+    "expected_result": "Valid CMAC frame is accepted and forwarded. Corrupted and missing CMAC frames are dropped and a security event is logged.",
+    "linked_requirement_ids": ["REQ-004"]
+  },
+  {
+    "id": "TEST-006",
+    "title": "Verify Replay Detection with Freshness Values",
+    "objective": "Confirm that replayed messages with stale freshness values are rejected.",
+    "steps": ["1. Send an authenticated message with freshness counter N.", "2. Send another authenticated message with freshness counter N+1.", "3. Replay the first message with freshness counter N."],
+    "expected_result": "Messages with counters N and N+1 are accepted sequentially. The replayed message with counter N is rejected as stale.",
+    "linked_requirement_ids": ["REQ-005"]
+  },
+  {
+    "id": "TEST-007",
+    "title": "Verify IDS Anomaly Alert Generation",
+    "objective": "Confirm that the in-vehicle IDS raises alerts when CAN bus traffic deviates from the learned baseline.",
+    "steps": ["1. Establish a baseline by operating the vehicle normally for the training period.", "2. Inject CAN frames at 10x the normal rate for a specific arbitration ID.", "3. Inject CAN frames with an arbitration ID not present in the baseline.", "4. Check the IDS alert log."],
+    "expected_result": "IDS generates alerts within 500 ms for both the rate anomaly and the unknown arbitration ID, with correct severity classification.",
+    "linked_requirement_ids": ["REQ-006"]
+  },
+  {
+    "id": "TEST-008",
+    "title": "Verify HSM Key Non-Extractability",
+    "objective": "Confirm that cryptographic keys stored in the HSM cannot be read out and that cryptographic operations are performed internally.",
+    "steps": ["1. Attempt to read the private key from the HSM via its API.", "2. Request the HSM to perform a signing operation.", "3. Verify the signature using the corresponding public key."],
+    "expected_result": "Key read attempt is denied. Signing operation succeeds with the result returned (not the key). Signature verifies correctly with the public key.",
+    "linked_requirement_ids": ["REQ-007"]
+  },
+  {
+    "id": "TEST-009",
+    "title": "Verify Diagnostic Role-Based Access Control",
+    "objective": "Confirm that diagnostic services enforce RBAC and deny access to unauthorized roles.",
+    "steps": ["1. Connect with a 'basic' diagnostic tool and attempt to read fault codes (permitted).", "2. With the same tool, attempt to write ECU calibration data (restricted).", "3. Connect with a 'factory' diagnostic tool with valid credentials and attempt calibration write."],
+    "expected_result": "Basic tool can read fault codes but is denied calibration write access. Factory tool with valid credentials succeeds for calibration write.",
+    "linked_requirement_ids": ["REQ-008"]
+  },
+  {
+    "id": "TEST-010",
+    "title": "Verify Security Event Log Completeness",
+    "objective": "Confirm that all defined security events are logged with correct timestamps and details.",
+    "steps": ["1. Trigger a failed authentication attempt.", "2. Trigger a successful authentication.", "3. Trigger a configuration change.", "4. Review the security event log for all three events."],
+    "expected_result": "All three events are present in the log with accurate timestamps, event types, source identifiers, and outcome details.",
+    "linked_requirement_ids": ["REQ-009"]
+  },
+  {
+    "id": "TEST-011",
+    "title": "Verify Network Domain Segmentation",
+    "objective": "Confirm that the gateway blocks unauthorized cross-domain messages.",
+    "steps": ["1. Send a legitimate message from the infotainment domain to the infotainment ECU (permitted).", "2. Send a message from the infotainment domain targeting a powertrain ECU (blocked).", "3. Send a legitimate message from the powertrain domain to the powertrain ECU (permitted)."],
+    "expected_result": "Intra-domain messages pass. Cross-domain message from infotainment to powertrain is dropped by the gateway and logged as a policy violation.",
+    "linked_requirement_ids": ["REQ-010"]
+  },
+  {
+    "id": "TEST-012",
+    "title": "Verify OTA Package Hash Validation",
+    "objective": "Confirm that OTA packages with mismatched hashes are rejected.",
+    "steps": ["1. Download an OTA package and verify its SHA-256 hash matches the manifest.", "2. Modify one byte of the downloaded package.", "3. Attempt to install the modified package."],
+    "expected_result": "Unmodified package passes hash validation and proceeds to installation. Modified package fails hash check and is rejected with an integrity error.",
+    "linked_requirement_ids": ["REQ-011"]
+  },
+  {
+    "id": "TEST-013",
+    "title": "Verify API Rate Limiting",
+    "objective": "Confirm that the cloud API enforces per-client rate limits.",
+    "steps": ["1. Send requests at the normal rate and verify all succeed.", "2. Send requests at 2x the rate limit.", "3. Send requests at 10x the rate limit."],
+    "expected_result": "Normal-rate requests succeed. 2x rate triggers throttling (HTTP 429). 10x rate triggers blocking with a longer cooldown period.",
+    "linked_requirement_ids": ["REQ-012"]
+  },
+  {
+    "id": "TEST-014",
+    "title": "Verify Input Sanitization at Trust Boundaries",
+    "objective": "Confirm that malformed inputs are rejected at trust boundary entry points.",
+    "steps": ["1. Send a well-formed request with valid schema.", "2. Send a request with SQL injection payload in a text field.", "3. Send a request with an integer field set to a string value.", "4. Send a request with a missing required field."],
+    "expected_result": "Valid request succeeds. All malformed requests (steps 2–4) are rejected with appropriate error codes and logged.",
+    "linked_requirement_ids": ["REQ-013"]
+  },
+  {
+    "id": "TEST-015",
+    "title": "Verify TLS 1.3 Enforcement",
+    "objective": "Confirm that only TLS 1.3 connections are accepted and legacy protocols are rejected.",
+    "steps": ["1. Attempt connection using TLS 1.3.", "2. Attempt connection using TLS 1.2.", "3. Attempt connection using TLS 1.0."],
+    "expected_result": "TLS 1.3 connection succeeds. TLS 1.2 and 1.0 connections are rejected at handshake.",
+    "linked_requirement_ids": ["REQ-014"]
+  },
+  {
+    "id": "TEST-016",
+    "title": "Verify Certificate Pinning Enforcement",
+    "objective": "Confirm that the mobile app and TCU reject connections to servers presenting non-pinned certificates.",
+    "steps": ["1. Connect to the cloud API with the legitimate pinned certificate.", "2. Connect via a proxy presenting a valid but non-pinned certificate from a different CA.", "3. Connect via a proxy presenting a self-signed certificate."],
+    "expected_result": "Pinned certificate connection succeeds. Both non-pinned certificate connections are rejected with pinning violation errors.",
+    "linked_requirement_ids": ["REQ-015"]
+  },
+  {
+    "id": "TEST-017",
+    "title": "Verify Firmware Anti-Rollback Check",
+    "objective": "Confirm that firmware with a version number <= the current counter is rejected.",
+    "steps": ["1. Install firmware version 5 (current counter becomes 5).", "2. Attempt to install firmware version 4.", "3. Attempt to install firmware version 5 again.", "4. Install firmware version 6."],
+    "expected_result": "Versions 4 and 5 are rejected as rollback attempts. Version 6 is accepted and the counter advances to 6.",
+    "linked_requirement_ids": ["REQ-016"]
+  },
+  {
+    "id": "TEST-018",
+    "title": "Verify Supply-Chain SBOM Requirement",
+    "objective": "Confirm that components from suppliers without an SBOM are flagged during integration review.",
+    "steps": ["1. Submit a component for integration review with a complete SBOM.", "2. Submit a component without an SBOM.", "3. Submit a component with an SBOM containing known vulnerable dependencies."],
+    "expected_result": "Component with complete SBOM passes review. Component without SBOM is rejected. Component with vulnerable dependencies is flagged for remediation.",
+    "linked_requirement_ids": ["REQ-017"]
+  },
+  {
+    "id": "TEST-019",
+    "title": "Verify Bluetooth Secure Pairing Enforcement",
+    "objective": "Confirm that legacy and Just Works Bluetooth pairing modes are rejected.",
+    "steps": ["1. Attempt pairing using Secure Simple Pairing with Numeric Comparison.", "2. Attempt pairing using legacy PIN-based pairing.", "3. Attempt pairing using Just Works mode."],
+    "expected_result": "SSP Numeric Comparison pairing succeeds. Legacy and Just Works pairing attempts are rejected by the vehicle Bluetooth stack.",
+    "linked_requirement_ids": ["REQ-018"]
+  },
+  {
+    "id": "TEST-020",
+    "title": "Verify Mobile App Code Signing Validation",
+    "objective": "Confirm that the mobile app validates its code signature at launch and detects tampering.",
+    "steps": ["1. Launch the unmodified signed app.", "2. Modify one byte of the app binary and attempt to launch.", "3. Launch the app on a rooted/jailbroken device."],
+    "expected_result": "Unmodified app launches normally. Tampered app detects integrity violation and refuses to start. Rooted device triggers a warning or restricted-mode operation.",
+    "linked_requirement_ids": ["REQ-019"]
+  },
+  {
+    "id": "TEST-021",
+    "title": "Verify Data Collection Minimization",
+    "objective": "Confirm that the telemetry system collects only the configured minimum data set.",
+    "steps": ["1. Configure telemetry to collect only speed and fuel level.", "2. Drive the vehicle and collect telemetry.", "3. Inspect the uploaded data for fields beyond speed and fuel level."],
+    "expected_result": "Uploaded data contains only speed and fuel level. No additional fields (GPS, acceleration, driver behavior) are present unless explicitly configured.",
+    "linked_requirement_ids": ["REQ-020"]
+  },
+  {
+    "id": "TEST-022",
+    "title": "Verify NTP Authentication",
+    "objective": "Confirm that unauthenticated NTP responses are rejected by the TCU.",
+    "steps": ["1. Configure the TCU to use authenticated NTP (NTS).", "2. Send a legitimate authenticated NTP response.", "3. Send an unauthenticated NTP response with a large time offset."],
+    "expected_result": "Authenticated NTP response is accepted and time is updated. Unauthenticated response is rejected and the existing time is preserved.",
+    "linked_requirement_ids": ["REQ-021"]
+  },
+  {
+    "id": "TEST-023",
+    "title": "Verify Security Alert Notification",
+    "objective": "Confirm that security alerts are generated and delivered when thresholds are exceeded.",
+    "steps": ["1. Configure an alert threshold: 5 failed logins in 60 seconds.", "2. Trigger 4 failed logins (below threshold).", "3. Trigger a 5th failed login within the window.", "4. Check the alert notification system."],
+    "expected_result": "No alert after 4 failures. Alert is generated and delivered within 10 seconds after the 5th failure, with correct details.",
+    "linked_requirement_ids": ["REQ-022"]
+  },
+  {
+    "id": "TEST-024",
+    "title": "Verify Firmware Encryption at Rest",
+    "objective": "Confirm that firmware stored on flash is encrypted and not readable without the HSM.",
+    "steps": ["1. Read raw flash memory contents from the ECU.", "2. Attempt to parse the raw contents as a firmware binary.", "3. Boot the ECU normally and verify firmware executes (decrypted by HSM during boot)."],
+    "expected_result": "Raw flash contents are encrypted and unparseable as a firmware binary. Normal boot succeeds because the HSM decrypts during the secure boot process.",
+    "linked_requirement_ids": ["REQ-023"]
+  },
+  {
+    "id": "TEST-025",
+    "title": "Verify Diagnostic Session Timeout",
+    "objective": "Confirm that diagnostic sessions terminate after the configured inactivity timeout.",
+    "steps": ["1. Open an extended diagnostic session.", "2. Send a diagnostic request within the timeout period.", "3. Wait for the inactivity timeout to expire (30+ seconds).", "4. Attempt another diagnostic request."],
+    "expected_result": "Request within timeout succeeds. After timeout expiry, the subsequent request is rejected with a session-expired error.",
+    "linked_requirement_ids": ["REQ-024"]
+  },
+  {
+    "id": "TEST-026",
+    "title": "Verify CAN Message Rate Filtering",
+    "objective": "Confirm that the gateway drops CAN frames exceeding configured rate limits.",
+    "steps": ["1. Send CAN frames for arbitration ID 0x100 at the configured normal rate.", "2. Increase the sending rate to 5x the configured limit.", "3. Monitor frames received on the other side of the gateway."],
+    "expected_result": "Normal-rate frames pass through the gateway. Excess frames beyond the rate limit are dropped and a rate-violation event is logged.",
+    "linked_requirement_ids": ["REQ-025"]
+  },
+  {
+    "id": "TEST-027",
+    "title": "Verify Telemetry Anomaly Detection",
+    "objective": "Confirm that the anomaly detection system flags impossible or suspicious telemetry values.",
+    "steps": ["1. Send normal telemetry data (speed 60 km/h, position moving consistently).", "2. Send a telemetry point with speed 999 km/h.", "3. Send a telemetry point with a position jump of 500 km in 1 second."],
+    "expected_result": "Normal data passes without flags. Impossible speed and position jump are flagged as anomalies with appropriate severity scores.",
+    "linked_requirement_ids": ["REQ-026"]
+  },
+  {
+    "id": "TEST-028",
+    "title": "Verify Admin Multi-Factor Authentication",
+    "objective": "Confirm that administrative access requires both password and a second factor.",
+    "steps": ["1. Attempt admin login with correct password only (no second factor).", "2. Attempt admin login with correct password and valid TOTP code.", "3. Attempt admin login with correct password and incorrect TOTP code."],
+    "expected_result": "Password-only attempt is denied with MFA required error. Correct password + valid TOTP succeeds. Correct password + invalid TOTP is denied.",
+    "linked_requirement_ids": ["REQ-027"]
+  },
+  {
+    "id": "TEST-029",
+    "title": "Verify Key Rotation Execution",
+    "objective": "Confirm that key rotation replaces the active key and that the old key is no longer usable for new operations.",
+    "steps": ["1. Perform a scheduled key rotation.", "2. Attempt a signing operation with the rotated (old) key.", "3. Perform a signing operation with the new key."],
+    "expected_result": "Key rotation succeeds. Old key is rejected for new signing operations. New key produces valid signatures.",
+    "linked_requirement_ids": ["REQ-028"]
+  },
+  {
+    "id": "TEST-030",
+    "title": "Verify Incident Response Plan Execution",
+    "objective": "Confirm that the incident response procedure can be executed through all phases for a simulated security incident.",
+    "steps": ["1. Simulate a security incident (e.g., compromised TCU detected).", "2. Execute detection phase: verify alert reaches the security team.", "3. Execute containment phase: isolate the affected TCU.", "4. Execute recovery phase: push emergency OTA update."],
+    "expected_result": "All phases execute within defined SLA times. TCU is isolated, remediated, and returned to service with audit trail of all actions.",
+    "linked_requirement_ids": ["REQ-029"]
+  },
+  {
+    "id": "TEST-031",
+    "title": "Verify OBD-II Port Physical Security",
+    "objective": "Confirm that the OBD-II port generates alerts when unknown devices are connected.",
+    "steps": ["1. Connect a known, registered diagnostic tool to the OBD-II port.", "2. Connect an unknown, unregistered device to the OBD-II port.", "3. Check for alert generation."],
+    "expected_result": "Known tool connects without alert. Unknown device triggers a security alert with device identification details.",
+    "linked_requirement_ids": ["REQ-030"]
+  },
+  {
+    "id": "TEST-032",
+    "title": "Verify Log Hash Chain Integrity",
+    "objective": "Confirm that tampering with any log entry is detected by the hash chain verification.",
+    "steps": ["1. Write 10 log entries and verify the hash chain.", "2. Modify one byte in the 5th log entry.", "3. Run the hash chain verification again."],
+    "expected_result": "Initial verification succeeds. After modification, verification fails at entry 5 and reports the exact position of tampering.",
+    "linked_requirement_ids": ["REQ-031"]
+  }
+]

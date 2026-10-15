@@ -1,0 +1,50 @@
+{
+  "scenario_1_token_abuse": {
+    "name": "Token Abuse and API Authorization Bypass",
+    "asset_id": "A-01",
+    "expected_top_threat_id": "TP-001",
+    "expected_trust_boundary": "TB-01",
+    "expected_stride": "Spoofing",
+    "expected_controls_contain": ["CTRL-002", "CTRL-015"]
+  },
+  "scenario_2_malicious_ota_firmware": {
+    "name": "Malicious OTA Firmware Injection",
+    "asset_id": "A-03",
+    "expected_top_threat_id": "TP-002",
+    "expected_trust_boundary": "TB-02",
+    "expected_stride": "Tampering",
+    "expected_controls_contain": ["CTRL-003", "CTRL-004"]
+  },
+  "scenario_3_replayed_remote_command": {
+    "name": "Replayed Remote Vehicle Command",
+    "asset_id": "A-07",
+    "expected_top_threat_id": "TP-003",
+    "expected_trust_boundary": "TB-02",
+    "expected_stride": "Spoofing",
+    "expected_controls_contain": ["CTRL-005", "CTRL-006"]
+  },
+  "scenario_4_compromised_tcu_can_injection": {
+    "name": "Compromised TCU CAN Message Injection",
+    "asset_id": "A-05",
+    "expected_top_threat_id": "TP-004",
+    "expected_trust_boundary": "TB-03",
+    "expected_stride": "Tampering",
+    "expected_controls_contain": ["CTRL-005", "CTRL-007"]
+  },
+  "scenario_5_diagnostic_security_access_bypass": {
+    "name": "Diagnostic Security-Access Bypass via OBD-II",
+    "asset_id": "A-08",
+    "expected_top_threat_id": "TP-005",
+    "expected_trust_boundary": "TB-04",
+    "expected_stride": "Elevation of Privilege",
+    "expected_controls_contain": ["CTRL-009", "CTRL-025"]
+  },
+  "scenario_6_bluetooth_adapter_change_impact": {
+    "name": "Bluetooth Diagnostic Adapter Change Impact (v1 vs v2)",
+    "asset_id": "A-08",
+    "baseline_v1_expected_absent_threat": "TP-013",
+    "baseline_v2_expected_top_threat_id": "TP-013",
+    "expected_trust_boundary_v2": "TB-05",
+    "expected_controls_contain": ["CTRL-019", "CTRL-009"]
+  }
+}

@@ -1,0 +1,46 @@
+################################################################################
+# AutoTARA AI — Central Configuration
+# All tunable parameters live here.  Code reads this via autotara.config.
+################################################################################
+
+project:
+  name: "AutoTARA AI"
+  reference_date: "2026-10-13"          # Fixed anchor for freshness computation
+
+paths:
+  architecture_dir: "Input_Data/architecture"
+  knowledge_base_dir: "Input_Data/knowledge_base"
+  chroma_persist_dir: "Code/data/chroma_db"
+  sqlite_db: "Code/data/autotara.db"
+
+retrieval:
+  default_mode: "hybrid"                # tfidf | bm25 | dense | hybrid
+  top_k: 5
+  dense_model: "BAAI/bge-small-en-v1.5"
+  rrf_k: 60                            # Reciprocal Rank Fusion constant
+  random_seed: 42
+
+llm:
+  provider: "ollama"
+  model: "llama3.2:3b"
+  base_url: "http://localhost:11434"
+  temperature: 0.0
+  timeout_seconds: 30
+  enabled: true                         # false → template-only mode
+
+# Freshness is determined ONLY by next_review_date relative to reference_date.
+#   Current:    next_review_date > reference_date + current_ahead_days
+#   Review Due: reference_date - outdated_overdue_days <= next_review_date
+#                                                       <= reference_date + current_ahead_days
+#   Outdated:   next_review_date < reference_date - outdated_overdue_days
+freshness:
+  current_ahead_days: 30                # must be >30 days in the future to be Current
+  outdated_overdue_days: 180            # overdue by >180 days → Outdated
+
+roles:
+  - name: "Engineer"
+    permissions: ["view", "edit", "propose", "export"]
+  - name: "Reviewer"
+    permissions: ["view", "edit", "propose", "accept", "reject", "export"]
+  - name: "Viewer"
+    permissions: ["view"]

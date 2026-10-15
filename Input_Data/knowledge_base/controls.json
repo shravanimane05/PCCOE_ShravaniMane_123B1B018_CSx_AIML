@@ -1,0 +1,226 @@
+[
+  {
+    "id": "CTRL-001",
+    "name": "Mutual TLS Authentication",
+    "description": "Enforce mutual TLS (mTLS) on all server-to-server and server-to-device communication channels, requiring both parties to present valid X.509 certificates for identity verification before establishing a session.",
+    "type": "preventive",
+    "applicable_asset_types": ["cloud_api", "tcu"]
+  },
+  {
+    "id": "CTRL-002",
+    "name": "OAuth 2.0 Token Validation with Short Expiry",
+    "description": "Implement OAuth 2.0 authorization with short-lived access tokens (max 15 minutes), refresh token rotation, audience and scope validation, and server-side token revocation capability.",
+    "type": "preventive",
+    "applicable_asset_types": ["mobile_app", "cloud_api"]
+  },
+  {
+    "id": "CTRL-003",
+    "name": "Firmware Signing and Verification",
+    "description": "Digitally sign all firmware images using asymmetric cryptography (ECDSA P-256 or Ed25519) and verify the signature on the target ECU before installation. Reject any firmware with an invalid or missing signature.",
+    "type": "preventive",
+    "applicable_asset_types": ["ota_firmware", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-004",
+    "name": "Secure Boot Chain",
+    "description": "Implement a hardware-rooted secure boot chain on all ECUs, verifying the integrity of each boot stage from ROM bootloader through application firmware before execution.",
+    "type": "preventive",
+    "applicable_asset_types": ["tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-005",
+    "name": "Message Authentication Code for CAN/Ethernet",
+    "description": "Apply cryptographic message authentication codes (CMAC or HMAC) to safety-critical CAN and Automotive Ethernet frames to detect forgery and ensure message integrity and authenticity.",
+    "type": "preventive",
+    "applicable_asset_types": ["vehicle_messages", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-006",
+    "name": "Replay Protection with Freshness Values",
+    "description": "Include monotonic counters, timestamps, or challenge-response nonces in authenticated messages to detect and reject replayed messages. Each message must carry a freshness value verified by the receiver.",
+    "type": "preventive",
+    "applicable_asset_types": ["vehicle_messages", "cloud_api", "tcu"]
+  },
+  {
+    "id": "CTRL-007",
+    "name": "In-Vehicle Network Intrusion Detection System",
+    "description": "Deploy an anomaly-based intrusion detection system on the CAN bus and Automotive Ethernet that monitors frame frequency, timing, arbitration ID patterns, and payload anomalies, raising alerts on deviations from learned baselines.",
+    "type": "detective",
+    "applicable_asset_types": ["vehicle_messages", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-008",
+    "name": "Hardware Security Module for Key Storage",
+    "description": "Store all cryptographic keys (signing keys, MAC keys, TLS private keys) in a tamper-resistant Hardware Security Module (HSM) that prevents key extraction and performs cryptographic operations internally.",
+    "type": "preventive",
+    "applicable_asset_types": ["signing_key", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-009",
+    "name": "Role-Based Access Control for Diagnostic Services",
+    "description": "Enforce role-based access control on diagnostic services, requiring authentication and authorization appropriate to the requested service level. Restrict safety-critical services to authenticated factory tools only.",
+    "type": "preventive",
+    "applicable_asset_types": ["diagnostic_services", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-010",
+    "name": "Security Logging and Monitoring",
+    "description": "Log all security-relevant events (authentication attempts, access control decisions, configuration changes, anomaly detections) with tamper-evident timestamps and forward logs to a secure, centralized monitoring system.",
+    "type": "detective",
+    "applicable_asset_types": ["audit_logs", "cloud_api", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-011",
+    "name": "Network Segmentation and Gateway Firewall Rules",
+    "description": "Segment the in-vehicle network into security domains (infotainment, body, powertrain, ADAS) using the central gateway ECU. Apply strict allowlist-based firewall rules that permit only explicitly authorized message flows between domains.",
+    "type": "preventive",
+    "applicable_asset_types": ["gateway_ecu", "vehicle_messages"]
+  },
+  {
+    "id": "CTRL-012",
+    "name": "OTA Update Package Integrity Check",
+    "description": "Verify OTA update package integrity using cryptographic hash comparison (SHA-256) before and after download. Reject packages whose hash does not match the signed manifest.",
+    "type": "preventive",
+    "applicable_asset_types": ["ota_firmware", "tcu"]
+  },
+  {
+    "id": "CTRL-013",
+    "name": "API Rate Limiting and Throttling",
+    "description": "Enforce per-client and per-endpoint rate limits on all cloud API endpoints. Apply graduated throttling (warning, degraded service, block) and implement CAPTCHA or proof-of-work challenges for excessive request rates.",
+    "type": "preventive",
+    "applicable_asset_types": ["cloud_api"]
+  },
+  {
+    "id": "CTRL-014",
+    "name": "Input Validation and Sanitization",
+    "description": "Validate and sanitize all external inputs at trust boundary entry points against defined schemas. Reject malformed, out-of-range, or unexpected input types before processing.",
+    "type": "preventive",
+    "applicable_asset_types": ["cloud_api", "gateway_ecu", "tcu"]
+  },
+  {
+    "id": "CTRL-015",
+    "name": "Encrypted Communication Channels",
+    "description": "Encrypt all data in transit using TLS 1.3 (or DTLS 1.2+ for UDP) with strong cipher suites. Disable legacy protocols (SSL, TLS 1.0/1.1) and weak ciphers.",
+    "type": "preventive",
+    "applicable_asset_types": ["cloud_api", "tcu", "mobile_app"]
+  },
+  {
+    "id": "CTRL-016",
+    "name": "Certificate Pinning",
+    "description": "Pin expected server certificates or public keys in the mobile app and TCU TLS client to prevent man-in-the-middle attacks using fraudulent certificates from compromised or rogue certificate authorities.",
+    "type": "preventive",
+    "applicable_asset_types": ["mobile_app", "tcu"]
+  },
+  {
+    "id": "CTRL-017",
+    "name": "Anti-Rollback Protection",
+    "description": "Maintain a monotonic firmware version counter in one-time-programmable (OTP) fuses or secure storage. Reject any firmware update whose version number is less than or equal to the currently stored counter value.",
+    "type": "preventive",
+    "applicable_asset_types": ["ota_firmware", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-018",
+    "name": "Supply-Chain Security Assessment",
+    "description": "Require all third-party component suppliers to provide a Software Bill of Materials (SBOM), pass security audits, and comply with defined cybersecurity development lifecycle requirements before component integration.",
+    "type": "preventive",
+    "applicable_asset_types": ["tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-019",
+    "name": "Bluetooth Secure Simple Pairing Enforcement",
+    "description": "Enforce Bluetooth Secure Simple Pairing (SSP) with Numeric Comparison or Passkey Entry association model. Disable legacy pairing and Just Works mode. Require user confirmation for all new pairings.",
+    "type": "preventive",
+    "applicable_asset_types": ["diagnostic_services", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-020",
+    "name": "Application Code Signing and Runtime Integrity",
+    "description": "Sign all application packages with the developer's code-signing certificate. Verify signature at install time and implement runtime integrity checks (root/jailbreak detection, debugger detection) on mobile platforms.",
+    "type": "preventive",
+    "applicable_asset_types": ["mobile_app"]
+  },
+  {
+    "id": "CTRL-021",
+    "name": "Data Minimization and Privacy Controls",
+    "description": "Collect only the minimum vehicle and user data required for each stated purpose. Implement configurable data collection policies, user consent management, data retention limits, and anonymization for analytics.",
+    "type": "preventive",
+    "applicable_asset_types": ["telemetry_data", "cloud_api"]
+  },
+  {
+    "id": "CTRL-022",
+    "name": "Time Synchronization Security",
+    "description": "Authenticate NTP/time-sync traffic using NTS (Network Time Security) or symmetric key authentication. Implement plausibility checks on time jumps and maintain a local monotonic clock as fallback.",
+    "type": "preventive",
+    "applicable_asset_types": ["tcu", "cloud_api"]
+  },
+  {
+    "id": "CTRL-023",
+    "name": "Security Event Alerting and Escalation",
+    "description": "Define alert thresholds and escalation procedures for critical security events. Automatically notify the security operations team when IDS alerts, authentication failures, or anomaly scores exceed defined thresholds.",
+    "type": "detective",
+    "applicable_asset_types": ["cloud_api", "audit_logs"]
+  },
+  {
+    "id": "CTRL-024",
+    "name": "Firmware Encryption at Rest",
+    "description": "Encrypt firmware images stored on ECU flash memory and on the OTA distribution server using AES-256. Decrypt only during verified boot using keys stored in the HSM.",
+    "type": "preventive",
+    "applicable_asset_types": ["ota_firmware", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-025",
+    "name": "Diagnostic Session Timeout and Lockout",
+    "description": "Automatically terminate diagnostic sessions after a configurable inactivity timeout (default 30 seconds). Implement progressive lockout (exponential backoff) after failed security-access attempts.",
+    "type": "preventive",
+    "applicable_asset_types": ["diagnostic_services"]
+  },
+  {
+    "id": "CTRL-026",
+    "name": "CAN Bus Message Rate Filtering",
+    "description": "Configure the gateway ECU to enforce per-arbitration-ID message rate limits. Drop frames that exceed expected transmission rates to mitigate bus-flooding denial-of-service attacks.",
+    "type": "preventive",
+    "applicable_asset_types": ["vehicle_messages", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-027",
+    "name": "Telemetry Anomaly Detection",
+    "description": "Apply statistical and rule-based anomaly detection to incoming telemetry data streams, flagging unusual patterns (sudden location jumps, impossible speed values, data volume spikes) for review.",
+    "type": "detective",
+    "applicable_asset_types": ["telemetry_data", "cloud_api"]
+  },
+  {
+    "id": "CTRL-028",
+    "name": "Multi-Factor Authentication for Administrative Access",
+    "description": "Require multi-factor authentication (password + TOTP/hardware token) for all administrative access to cloud infrastructure, OTA servers, and management portals. Enforce session re-authentication for sensitive operations.",
+    "type": "preventive",
+    "applicable_asset_types": ["cloud_api", "ota_firmware"]
+  },
+  {
+    "id": "CTRL-029",
+    "name": "Secure Key Provisioning and Rotation",
+    "description": "Implement automated key provisioning during manufacturing and periodic key rotation schedules. Support over-the-air key update with forward secrecy. Revoke compromised keys immediately across the fleet.",
+    "type": "preventive",
+    "applicable_asset_types": ["signing_key", "tcu", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-030",
+    "name": "Incident Response and Recovery Procedure",
+    "description": "Maintain a documented incident response plan covering detection, containment, eradication, recovery, and lessons-learned phases. Include procedures for remote vehicle remediation, fleet-wide key revocation, and emergency OTA updates.",
+    "type": "corrective",
+    "applicable_asset_types": ["cloud_api", "tcu", "gateway_ecu", "audit_logs"]
+  },
+  {
+    "id": "CTRL-031",
+    "name": "OBD-II Port Physical Security",
+    "description": "Implement physical countermeasures for the OBD-II port: tamper-evident covers, port disablement when vehicle is in motion, and anomaly alerts when an unknown device is connected.",
+    "type": "preventive",
+    "applicable_asset_types": ["diagnostic_services", "gateway_ecu"]
+  },
+  {
+    "id": "CTRL-032",
+    "name": "Log Integrity Protection via Hash Chains",
+    "description": "Protect the integrity of security and audit logs using cryptographic hash chains (each log entry includes the hash of the previous entry). Store chain anchors in the HSM to detect any tampering or deletion.",
+    "type": "preventive",
+    "applicable_asset_types": ["audit_logs"]
+  }
+]

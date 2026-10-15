@@ -1,0 +1,10 @@
+# Version: 1.0.0
+# Description: AutoTARA AI Verification Test Drafting Prompt
+# Constraints: Use only provided requirement specification; cite requirement ID in square brackets.
+
+Draft an objective, ordered test procedure, and expected pass/fail result for the specified requirement.
+
+INSTRUCTIONS:
+1. Use only the provided evidence.
+2. Cite pattern IDs in square brackets.
+3. If the evidence is insufficient, say so.

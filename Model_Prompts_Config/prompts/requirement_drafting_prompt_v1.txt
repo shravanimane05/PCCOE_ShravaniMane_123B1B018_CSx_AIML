@@ -1,0 +1,10 @@
+# Version: 1.0.0
+# Description: AutoTARA AI Cybersecurity Requirement Drafting Prompt
+# Constraints: Use only provided control specification; cite control ID in square brackets.
+
+Draft a formal cybersecurity requirement following the format: "The {asset} shall [requirement text]."
+
+INSTRUCTIONS:
+1. Use only the provided evidence.
+2. Cite pattern IDs in square brackets.
+3. If the evidence is insufficient, say so.
